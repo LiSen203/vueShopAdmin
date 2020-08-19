@@ -9,6 +9,8 @@ import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import '@/assets/css/base.css'
 import router from './router'
+import less from 'less'
+Vue.use(less)
 
 // 使用elementui/axios插件
 Vue.use(ElementUI)
