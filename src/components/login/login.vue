@@ -8,19 +8,24 @@
              :rules="rules"
              ref="formdata">
       <h2>用户登陆</h2>
-      <el-form-item label="用户名">
+      <el-form-item label="用户名"
+                    prop="username">
         <el-input v-model="formdata.username"></el-input>
       </el-form-item>
-      <el-form-item label="密码">
+      <el-form-item label="密码"
+                    prop="password">
         <el-input v-model="formdata.password"
                   type="password"
                   prefix-icon="iconfont icon-3702mima"></el-input>
       </el-form-item>
-      <el-button type="primary"
-                 @click='login'
-                 class="login-btn">登陆</el-button>
-      <el-button type="info"
-                 @click="resetLoginForm">重置</el-button>
+
+      <el-form-item>
+        <el-button type="primary"
+                   @click='login'
+                   class="login-btn">登陆</el-button>
+        <el-button type="info"
+                   @click="resetLoginForm">重置</el-button>
+      </el-form-item>
     </el-form>
   </div>
 </template>
@@ -53,8 +58,7 @@ export default {
   methods: {
     // 点击重置按钮，重置表单
     resetLoginForm () {
-      console.log(this)
-      this.$ref.formdata.resetFields()
+      this.$refs.formdata.resetFields()
     },
     // 登陆请求
     login () {
@@ -111,8 +115,5 @@ export default {
 .login-from h2 {
   font-size: 24px;
   color: #666;
-}
-.login-btn {
-  width: 100%;
 }
 </style>
