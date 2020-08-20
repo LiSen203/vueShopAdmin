@@ -6,7 +6,8 @@
         <img src="../assets/logo.png"
              alt="">
         <span>信息后台管理系统</span>
-        <el-button type="info">退出</el-button>
+        <el-button type="info"
+                   @click="layout">退出</el-button>
       </div>
     </el-header>
     <!-- 页面主体区域 -->
@@ -24,11 +25,13 @@
                  router
                  :default-active="activePath">
           <!-- 一级菜单 -->
-          <el-submenu>
+          <el-submenu v-for="(item,index) in menuList"
+                      :index="index.id"
+                      :key="item.id">
             <!-- 一级菜单模板区域 -->
             <template slot="title">
               <!-- 图标 -->
-              <i class="el-icon-setting"></i>
+              <i :class="iconList[item.id]"></i>
               <!-- 文本 -->
               信息发布
             </template>
@@ -53,11 +56,42 @@ export default {
     return {
       // 左侧菜单数据
       menuList: [],
+      // 菜单图标
+      iconList: {
+        '125': 'iconfont icon-user',
+        '103': 'iconfont icon-tijikongjian',
+        '101': 'iconfont icon-shangpin',
+        '102': 'iconfont icon-danju',
+        '145': 'iconfont icon-baobiao'
+      },
       // 是否折叠
       isCollapse: false,
       // 被激活的链接地址
       activePath: ''
     }
+  },
+  created () {
+    this.getMenuList()
+  },
+  methods: {
+    // 退出
+    layout () {
+      window.sessionStorage.clear()
+      this.$router.push('/login')
+    },
+    // 获取菜单api
+    getMenuList () {
+      this.$http.get('menus', this.menuList).then(res => {
+        console.log(res)
+      })
+    }
+
+    // async getMenuList () {
+    //   const { data: res } = await this.$http.get('menus')
+    //   if (res.meta.status !== 200) return this.$message.error(res.meta.msg)
+    //   this.menuList = res.data
+    //   console.log(res)
+    // }
   }
 }
 </script>
@@ -77,7 +111,7 @@ export default {
     display: flex;
     align-items: center;
     span {
-      margin-left: 15px;
+      margin: 0 15px;
     }
     img {
       padding: 8px;
