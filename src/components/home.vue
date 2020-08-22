@@ -25,23 +25,27 @@
                  router
                  :default-active="activePath">
           <!-- 一级菜单 -->
-          <el-submenu v-for="(item,index) in menuList"
-                      :index="index.id"
+          <el-submenu v-for="item in menuList"
+                      :index="item.id + ''"
                       :key="item.id">
             <!-- 一级菜单模板区域 -->
             <template slot="title">
               <!-- 图标 -->
               <i :class="iconList[item.id]"></i>
               <!-- 文本 -->
-              信息发布
+              {{item.authName}}
             </template>
             <!-- 二级菜单 -->
-            <el-menu-item>
+            <el-menu-item v-for="subItem in item.children"
+                          :key="subItem.id"
+                          :index="'/'+ subItem.path"
+                          @click="saveNavState('/' + subItem.path)">
+              <!-- 二级菜单模板区域 -->
               <template slot="title">
                 <!-- 图标 -->
-                <i class="el-icon-setting"></i>
+                <i class="el-icon-menu"></i>
                 <!-- 文本 -->
-                文章发表
+                <span>{{subItem.authName}}</span>
               </template>
             </el-menu-item>
           </el-submenu>
@@ -72,6 +76,8 @@ export default {
   },
   created () {
     this.getMenuList()
+    this.activePath = window.sessionStorage.getItem('activePath')
+    // console.log(window.sessionStorage)
   },
   methods: {
     // 退出
@@ -80,18 +86,23 @@ export default {
       this.$router.push('/login')
     },
     // 获取菜单api
-    getMenuList () {
-      this.$http.get('menus', this.menuList).then(res => {
-        console.log(res)
-      })
-    }
-
-    // async getMenuList () {
-    //   const { data: res } = await this.$http.get('menus')
-    //   if (res.meta.status !== 200) return this.$message.error(res.meta.msg)
-    //   this.menuList = res.data
-    //   console.log(res)
+    // getMenuList () {
+    //   this.$http.get('menus', this.menuList).then(res => {
+    //     console.log(res)
+    // //   })
     // }
+
+    async getMenuList () {
+      const { data: res } = await this.$http.get('menus')
+      if (res.meta.status !== 200) return this.$message.error(res.meta.msg)
+      this.menuList = res.data
+      console.log(res)
+    },
+    // 保持链接的激活状态
+    saveNavState (activePath) {
+      window.sessionStorage.setItem('activePath', activePath)
+      this.activePath = activePath
+    }
   }
 }
 </script>

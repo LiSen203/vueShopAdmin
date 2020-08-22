@@ -15,8 +15,7 @@
       <el-form-item label="密码"
                     prop="password">
         <el-input v-model="formdata.password"
-                  type="password"
-                  prefix-icon="iconfont icon-3702mima"></el-input>
+                  type="password"></el-input>
       </el-form-item>
 
       <el-form-item>
