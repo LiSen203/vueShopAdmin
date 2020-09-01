@@ -7,7 +7,7 @@
              alt="">
         <span>信息后台管理系统</span>
         <el-button type="info"
-                   @click="layout">退出</el-button>
+                   @click="layout">xxx</el-button>
       </div>
     </el-header>
     <!-- 页面主体区域 -->
