@@ -30,8 +30,10 @@
       <el-table :data="userlist"
                 highlight-current-row
                 style="width: 100%">
-        <el-table-column type="index"
-                         :index="indexMethod">
+        <el-table-column type="index">
+          <template slot-scope="scope">
+            <span>{{scope.$index + (queryInfo.pagenum - 1) * queryInfo.pagesize + 1}}</span>
+          </template>
         </el-table-column>
         <el-table-column label="姓名"
                          prop="username"></el-table-column>
@@ -72,12 +74,12 @@
       </el-table>
       <!-- 分页区域 -->
       <el-pagination :page-sizes="[1, 2, 5, 10]"
-                     :page-size="5"
-                     layout="total, sizes, prev, pager, next, jumper"
+                     :page-size="queryInfo.pagesize"
                      :total="total"
+                     :current-page="queryInfo.pagenum"
+                     layout="total, sizes, prev, pager, next, jumper"
                      @size-change="handleSizeChange"
-                     @current-change="handleCurrentChange"
-                     :current-page="queryInfo.pagenum">
+                     @current-change="handleCurrentChange">
       </el-pagination>
     </el-card>
     <!-- 添加用户 -->
@@ -200,6 +202,7 @@ export default {
   },
   created () {
     this.getUserList()
+    // this.indexMethod()
   },
   methods: {
     async getUserList () {
@@ -215,12 +218,12 @@ export default {
       }
     },
     // 解决分页翻页后索引为1问题
-    indexMethod (index) {
-      console.log(this.queryInfo.pagenum - 1)
-      console.log(this.queryInfo.pagesize)
-      // 正序
-      return ((this.queryInfo.pagenum - 1) * (this.queryInfo.pagesize)) + index + 1
-    },
+    // indexMethod (index) {
+    //   // console.log(this.queryInfo.pagenum - 1)
+    //   // console.log(this.queryInfo.pagesize)
+    //   // 正序
+    //   // return index + (this.queryInfo.pagenum - 1) * this.queryInfo.pagesize + 1
+    // },
     // 监听pagesize的改变事件
     handleSizeChange (pageNum) {
       // console.log(pageNum)
@@ -251,6 +254,8 @@ export default {
             this.$message.success('添加用户成功')
             // 隐藏添加用户的对话框
             this.addDialogVisible = false
+            // 重置表单
+            this.addDialogClosed()
             // 重新获取用户列表数据
             this.getUserList()
           }
