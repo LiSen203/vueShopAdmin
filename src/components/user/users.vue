@@ -22,15 +22,17 @@
         </el-col>
         <el-col :span="4">
           <el-button type="primary"
-                     @click="addDialogVisible = true">添加用户</el-button>
+                     @click="addDialogVisible = true"
+                     @close="addDialogClosed">添加用户</el-button>
         </el-col>
-
       </el-row>
       <!-- 用户列表 -->
       <el-table :data="userlist"
                 highlight-current-row
                 style="width: 100%">
-        <el-table-column type="index"></el-table-column>
+        <el-table-column type="index"
+                         :index="indexMethod">
+        </el-table-column>
         <el-table-column label="姓名"
                          prop="username"></el-table-column>
         <el-table-column label="邮箱"
@@ -70,8 +72,12 @@
       </el-table>
       <!-- 分页区域 -->
       <el-pagination :page-sizes="[1, 2, 5, 10]"
+                     :page-size="5"
                      layout="total, sizes, prev, pager, next, jumper"
-                     :total="total">
+                     :total="total"
+                     @size-change="handleSizeChange"
+                     @current-change="handleCurrentChange"
+                     :current-page="queryInfo.pagenum">
       </el-pagination>
     </el-card>
     <!-- 添加用户 -->
@@ -82,7 +88,7 @@
       <!-- 添加用户内容主体区域 -->
       <el-form :model="addForm"
                :rules="addFormRules"
-               ref="ruleForm"
+               ref="addFormRef"
                label-width="100px"
                class="addRuleForm">
         <el-form-item label="用户名"
@@ -101,8 +107,14 @@
                       prop="mobile">
           <el-input v-model="addForm.mobile"></el-input>
         </el-form-item>
-
       </el-form>
+      <!-- 底部确定与取消 -->
+      <span slot="footer"
+            class="dialog-footer">
+        <el-button @click="addDialogVisible = false">取 消</el-button>
+        <el-button type="primary"
+                   @click="addUser">确 定</el-button>
+      </span>
     </el-dialog>
   </div>
 
@@ -142,7 +154,7 @@ export default {
         // 当前的页数
         pagenum: 1,
         // 当前每页显示多少条数据
-        pagesize: 2
+        pagesize: 5
       },
       userlist: [],
       total: 0,
@@ -170,7 +182,7 @@ export default {
           {
             min: 6,
             max: 15,
-            message: '用户名的长度在6~15个字符之间',
+            message: '密码的长度在6~15个字符之间',
             trigger: 'blur'
           }
         ],
@@ -201,6 +213,49 @@ export default {
         this.total = res.data.total
         console.log(res)
       }
+    },
+    // 解决分页翻页后索引为1问题
+    indexMethod (index) {
+      console.log(this.queryInfo.pagenum - 1)
+      console.log(this.queryInfo.pagesize)
+      // 正序
+      return ((this.queryInfo.pagenum - 1) * (this.queryInfo.pagesize)) + index + 1
+    },
+    // 监听pagesize的改变事件
+    handleSizeChange (pageNum) {
+      // console.log(pageNum)
+      this.queryInfo.pagesize = pageNum
+      this.getUserList()
+    },
+    // 监听当前页数的改变
+    handleCurrentChange (newPage) {
+      console.log(newPage)
+      this.queryInfo.pagenum = newPage
+      this.getUserList()
+    },
+    // 监听添加用户关闭事件
+    addDialogClosed () {
+      this.$refs.addFormRef.resetFields()
+    },
+    // 点击确定按钮，添加用户
+    addUser () {
+      this.$refs.addFormRef.validate(async valid => {
+        if (!valid) {
+          return false
+        } else {
+          // 可以发起添加用户的网络请求
+          const { data: res } = await this.$http.post('users', this.addForm)
+          if (res.meta.status !== 201) {
+            this.$message.error('添加用户失败')
+          } else {
+            this.$message.success('添加用户成功')
+            // 隐藏添加用户的对话框
+            this.addDialogVisible = false
+            // 重新获取用户列表数据
+            this.getUserList()
+          }
+        }
+      })
     }
 
   }
