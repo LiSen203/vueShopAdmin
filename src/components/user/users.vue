@@ -167,8 +167,8 @@
                @close="setRoleDialogClosed">
       <!-- 角色用户信息内容主体区域 -->
       <div class="roleWarp">
-        <p>当前的用户：admin</p>
-        <p>当前的角色：经理</p>
+        <p>当前的用户：{{userInfo.username}}</p>
+        <p>当前的角色：{{userInfo.role_name}}</p>
         <p><span>分配新角色：</span>
           <el-select v-model="selectedRoleId"
                      placeholder="请选择">

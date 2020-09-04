@@ -17,4 +17,7 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   height: 100%;
 }
+.el-breadcrumb {
+  line-height: 2;
+}
 </style>
